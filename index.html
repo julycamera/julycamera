@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Remote - Voice Control — Developer Homepage</title>
+  <meta name="description" content="Control your TV with your iPhone. A minimal and efficient remote for Roku, Vizio, LG, Fire TV, and Android TV." />
+  <link rel="icon" href="./logo.png" />
+
+  <style>
+    :root{
+      --bg:#ffffff; --bg-alt:#f6f7fb; --text:#0b0b0d; --muted:#666a73; --line:#e6e7eb;
+      --primary:#3461ff; --primary-2:#7b5cff; --card:#ffffff;
+      --shadow:0 10px 30px rgba(0,0,0,.06); --radius:16px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b0b0d; --bg-alt:#101116; --text:#f4f4f6; --muted:#a2a5ad; --line:#24262e; --card:#12131a; --shadow:0 10px 30px rgba(0,0,0,.4);}
+    }
+    *{box-sizing:border-box} html,body{margin:0}
+    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg-alt));color:var(--text);}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);transition:.2s ease;cursor:pointer}
+    .btn:hover{transform:translateY(-1px)} .btn-primary{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#fff;border:none}
+    .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(127,127,127,.06)}
+    .section{padding:72px 0}.section.alt{background:linear-gradient(180deg,var(--bg-alt),var(--bg))}
+    .title{font-weight:800;letter-spacing:-.02em}.muted{color:var(--muted)}
+    .grid{display:grid;gap:16px}.card{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
+    .card .head{padding:16px 16px 0 16px}.card .body{padding:12px 16px 16px 16px;color:var(--muted)}
+    header.sticky{position:sticky;top:0;backdrop-filter:saturate(180%) blur(8px);background:color-mix(in oklab,var(--bg) 70%,transparent);border-bottom:1px solid var(--line);z-index:20}
+    header .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    header nav a{font-size:14px;opacity:.9} header nav a:hover{opacity:1}
+    .logo-wrap{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px}
+    .logo-wrap img{width:28px;height:28px;border-radius:6px;object-fit:cover}
+
+    .hero{display:grid;gap:40px;grid-template-columns:1.1fr .9fr;align-items:center}
+    .phone{width:280px;height:560px;border-radius:36px;border:1px solid var(--line);box-shadow:var(--shadow);background:var(--card);overflow:hidden}
+    .phone img{width:100%;height:100%;object-fit:cover}
+    .features{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .devices{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .device{padding:16px}
+    .shots{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .shot img{width:100%;height:auto;border-radius:16px;box-shadow:var(--shadow);object-fit:cover}
+    .shot span{color:var(--muted);font-size:14px}
+    .pricing{grid-template-columns:repeat(3,minmax(0,1fr))}.price{padding:18px}.price .big{font-size:28px;font-weight:800}
+    .faq{grid-template-columns:repeat(2,minmax(0,1fr))}
+    form input,form textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text)}
+    @media(max-width:980px){.hero{grid-template-columns:1fr}.features,.devices,.shots,.pricing,.faq{grid-template-columns:1fr 1fr}.phone{margin:0 auto}}
+    @media(max-width:640px){.features,.devices,.shots,.pricing,.faq{grid-template-columns:1fr}}
+  
+/* Segmented control for UI Preview */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.seg button{padding:8px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer;font-weight:600}
+.seg button[aria-selected="true"]{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#fff}
+
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="sticky">
+    <div class="container nav">
+      <a href="#top" class="logo-wrap">
+        <img src="./logo.png" alt="TV Remote - Voice Control Logo" onerror="this.style.display='none'">
+        <span>TV Remote - Voice Control</span>
+      </a>
+      <nav style="display:flex;gap:18px">
+        <a href="#features">Features</a>
+        <a href="#devices">Supported Devices</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="btn btn-primary" href="https://apps.apple.com/app/id6752770548" rel="noopener">Download</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="top" class="section">
+    <div class="container hero">
+      <div>
+        <h1 class="title" style="font-size:44px;line-height:1.15;margin:0 0 12px">
+          Control your TV with your <span style="background:linear-gradient(90deg,var(--primary),var(--primary-2));-webkit-background-clip:text;background-clip:text;color:transparent">iPhone</span>
+        </h1>
+        <p class="muted" style="font-size:16px;margin:12px 0 18px">
+          TV Remote - Voice Control is a minimal and efficient remote app that supports Roku, Vizio, LG, Fire TV, and Android TV. Connect instantly, control smoothly.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="https://apps.apple.com/app/id6752770548">Download on App Store</a>
+          <a class="btn" href="https://www.youtube.com/watch?v=Iq2e-EGfcjo" target="_blank" rel="noopener">Live Demo</a>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:10px;color:var(--muted);font-size:12px">
+          <span class="badge">No Ads</span>
+          <span class="badge">Local Connection</span>
+          <span class="badge">Free Trial</span>
+        </div>
+      </div>
+      <!-- Device Preview uses image3.png -->
+      <div style="display:flex;justify-content:center">
+        <div class="phone">
+          <img src="./image3.png" alt="Device Preview" onerror="this.replaceWith(document.createElement('span')); this.previousSibling && (this.previousSibling.textContent='Missing image3.png');">
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Voice Control Highlight -->
+  <section id="voice" class="section alt">
+    <div class="container" style="display:grid;gap:20px;grid-template-columns:1.1fr .9fr;align-items:center">
+      <div>
+        <h2 class="title" style="font-size:28px;margin:0 0 12px">Voice Control — Hands‑free TV</h2>
+        <p class="muted" style="font-size:16px;margin:12px 0 8px">
+          Control your TV with natural speech. Say <strong>“Open YouTube”</strong> or <strong>“Launch Netflix”</strong> to open apps instantly,
+          adjust volume, switch inputs, and search — all without touching the remote.
+        </p>
+        <ul class="muted" style="padding-left:18px;line-height:1.9;margin:10px 0 0">
+          <li><strong>Open apps by name</strong> — e.g., “Open YouTube”, “Open Prime Video”.</li>
+          <li><strong>Full playback control</strong> — play/pause, volume up/down, mute, channels.</li>
+          <li><strong>Siri integration</strong> — trigger commands via Siri for a smarter, connected experience.</li>
+        </ul>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <img src="./image2.png" alt="Voice Control Preview">
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Core Features -->
+  <section id="features" class="section alt">
+    <div class="container">
+      <h2 class="title" style="font-size:28px;margin:0 0 18px">Core Features</h2>
+      <div class="grid features">
+        <div class="card"><div class="head"><div class="badge">Voice Control</div></div><div class="body">Use natural speech to control your TV — say “Open YouTube” or “Launch Netflix” to open apps instantly, adjust volume, switch inputs, or navigate menus without touching the remote. Integrated with Siri for a seamless, intelligent entertainment experience.</div></div>
+        <div class="card"><div class="head"><div class="badge">Full remote controls</div></div><div class="body">D-pad, power, volume, mute, channels, digits, plus touchpad & gestures.</div></div>
+        <div class="card"><div class="head"><div class="badge">Low-latency feedback</div></div><div class="body">Local transport with millisecond response, smooth and snappy.</div></div>
+        <div class="card"><div class="head"><div class="badge">Privacy-first</div></div><div class="body">No PII collection, local-only control, optional diagnostics you can disable.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supported Devices -->
+  <section id="devices" class="section">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 class="title" style="font-size:28px">Supported Devices</h2>
+        <span class="badge">Growing list</span>
+      </div>
+      <div class="grid devices">
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> Roku</div><div class="muted" style="font-size:12px">LAN discovery / vendor APIs</div></div>
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> Vizio TV</div><div class="muted" style="font-size:12px">LAN discovery / vendor APIs</div></div>
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> LG TV</div><div class="muted" style="font-size:12px">LAN discovery / vendor APIs</div></div>
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> Fire TV</div><div class="muted" style="font-size:12px">ADB / Wi-Fi</div></div>
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> Android TV / Google TV</div><div class="muted" style="font-size:12px">ADB / Wi-Fi</div></div>
+        <div class="card device"><div style="display:flex;align-items:center;gap:8px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor"/><path d="M8 21h8" stroke="currentColor"/></svg> Smart TVs (selected brands)</div><div class="muted" style="font-size:12px">DLNA / SSDP discovery</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section id="privacy" class="section alt">
+    <div class="container" style="display:grid;gap:36px;grid-template-columns:1fr 1fr;align-items:center">
+      <div>
+        <h2 class="title" style="font-size:28px">Security & Privacy</h2>
+        <p class="muted">We follow a <b style="color:inherit">privacy-first</b> principle: local processing, minimal permissions, one-click cache & pairing reset.</p>
+        <ul class="muted" style="padding-left:18px;margin-top:12px;line-height:1.8">
+          <li>No collection of personally identifiable information (PII)</li>
+          <li>Local network communication with optional encryption</li>
+          <li>Transparent privacy policy & open core modules</li>
+        </ul>
+        <div style="display:flex;gap:16px;margin-top:14px">
+          <a class="btn" href="https://julycamera.github.io/DC/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+          <a class="btn" href="https://julycamera.github.io/DC/terms" target="_blank" rel="noopener">Terms of Use</a>
+        </div>
+      </div>
+      <div class="grid" style="gap:16px">
+        <div class="card"><div class="head"><strong>Local-only networking</strong></div><div class="body">Discovery via Bonjour/SSDP; control via ADB over Wi-Fi or vendor APIs; no exposure to WAN by default.</div></div>
+        <div class="card"><div class="head"><strong>Optional diagnostics</strong></div><div class="body">Only written when you enable it for troubleshooting; clearable with one tap.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UI Preview -->
+  <section id="demo" class="section">
+    <div class="container">
+      <h2 class="title" style="font-size:28px;margin-bottom:16px">UI Preview</h2>
+      <div class="seg" id="deviceSeg" role="tablist" aria-label="Device selector" style="margin:8px 0 12px"><button class="seg-btn" data-mode="iphone" role="tab" aria-selected="true">iPhone</button><button class="seg-btn" data-mode="ipad" role="tab" aria-selected="false">iPad</button></div>
+<div class="grid shots">
+        <div class="shot"><img src="./image1.png" alt="App Screenshot 1" onerror="this.replaceWith(document.createElement('span')).textContent='Missing image1.png'"></div>
+        <div class="shot"><img src="./image2.png" alt="App Screenshot 2" onerror="this.replaceWith(document.createElement('span')).textContent='Missing image2.png'"></div>
+        <div class="shot"><img src="./image3.png" alt="App Screenshot 3" onerror="this.replaceWith(document.createElement('span')).textContent='Missing image3.png'"></div>
+        <div class="shot"><img src="./image4.png" alt="App Screenshot 4" onerror="this.replaceWith(document.createElement('span')).textContent='Missing image4.png'"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="section alt">
+    <div class="container">
+      <h2 class="title" style="font-size:28px;margin-bottom:12px">Pricing</h2>
+      <div class="grid pricing">
+        <!-- Monthly -->
+        <div class="card price" data-sku="com.vip.sub.monthly" data-price="12.99">
+          <div class="head"><strong>Monthly</strong> <span class="badge" title="Trial SKU: com.vip.sub.monthly.trial">Trial available</span></div>
+          <div class="body">
+            <div class="big">$12.99</div>
+            <ul class="muted" style="line-height:1.9;padding-left:18px">
+              <li>All features</li>
+              <li>Cancel anytime</li>
+              <li>Includes updates</li>
+            </ul>
+            <a class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px" href="https://apps.apple.com/app/id6752770548" rel="noopener">Choose Monthly</a>
+          </div>
+        </div>
+        <!-- Yearly -->
+        <div class="card price" style="outline:2px solid var(--primary)" data-sku="com.vip.sub.yearly" data-price="39.99">
+          <div class="head"><strong>Yearly</strong> <span class="badge" title="Trial SKU: com.vip.sub.yearly.trial">Best value</span></div>
+          <div class="body">
+            <div class="big">$39.99</div>
+            <ul class="muted" style="line-height:1.9;padding-left:18px">
+              <li>Save vs monthly</li>
+              <li>All features unlocked</li>
+              <li>Priority support</li>
+            </ul>
+            <a class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px" href="https://apps.apple.com/app/id6752770548" rel="noopener">Choose Yearly</a>
+          </div>
+        </div>
+        <!-- Weekly -->
+        <div class="card price" data-sku="com.vip.sub.weekly" data-price="6.99">
+          <div class="head"><strong>Weekly</strong> <span class="badge" title="Trial SKU: com.vip.sub.weekly.trial">Trial available</span></div>
+          <div class="body">
+            <div class="big">$6.99</div>
+            <ul class="muted" style="line-height:1.9;padding-left:18px">
+              <li>Short-term access</li>
+              <li>All features</li>
+              <li>Includes updates</li>
+            </ul>
+            <a class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px" href="https://apps.apple.com/app/id6752770548" rel="noopener">Choose Weekly</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <div class="container">
+      <h2 class="title" style="font-size:28px;margin-bottom:12px">FAQ</h2>
+      <div class="grid faq">
+        <div class="card"><div class="head"><strong>Do I need jailbreak or root?</strong></div><div class="body">No. The app uses standard protocols (Bonjour/ADB over Wi-Fi/vendor APIs) to discover and connect.</div></div>
+        <div class="card"><div class="head"><strong>Should the phone and TV be on the same Wi-Fi?</strong></div><div class="body">Yes. For latency and stability, keep both on the same 2.4G/5G LAN.</div></div>
+        <div class="card"><div class="head"><strong>Which languages are supported?</strong></div><div class="body">English for now; we’ll add more localization based on feedback.</div></div>
+        <div class="card"><div class="head"><strong>Can I request features?</strong></div><div class="body">Absolutely! Email us or open a GitHub issue.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section alt">
+    <div class="container" style="display:grid;gap:36px;grid-template-columns:1fr 1fr">
+      <div>
+        <h2 class="title" style="font-size:28px">Contact & Support</h2>
+        <p class="muted">For issues or business inquiries, reach out below.</p>
+        <div style="display:grid;gap:10px;margin-top:14px">
+          <a class="btn" href="mailto:unitvremote@outlook.com">unitvremote@outlook.com</a>
+          <a class="btn" href="#">GitHub Repository</a>
+          <a class="btn" href="#">Press Kit</a>
+        </div>
+      </div>
+      <div class="card" style="padding:18px">
+        <h3 style="margin:0 0 4px">Quick Feedback</h3>
+        <p class="muted" style="margin-top:4px">Tell us about bugs or the features you want.</p>
+        <form onsubmit="event.preventDefault(); alert('Thanks for your feedback!');" style="margin-top:12px;display:grid;gap:10px">
+          <input aria-label="Your email (optional)" placeholder="Your email (optional)" />
+          <textarea aria-label="Feedback" placeholder="Feedback" rows="4"></textarea>
+          <button class="btn btn-primary" type="submit" style="justify-content:center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section" style="padding:40px 0">
+    <div class="container" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;color:var(--muted);font-size:14px">
+      <div class="logo-wrap">
+        <img src="./logo.png" alt="TV Remote - Voice Control Logo" style="width:20px;height:20px;border-radius:4px" onerror="this.style.display='none'">
+        <span>TV Remote - Voice Control</span>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <a href="https://julycamera.github.io/DC/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+        <a href="https://julycamera.github.io/DC/terms" target="_blank" rel="noopener">Terms of Use</a>
+        <span>© <span id="y"></span> TV Remote - Voice Control</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pricing JSON (for internal checks) -->
+  <script id="pricing-json" type="application/json">{
+    "plans": [
+      {"name":"yearly","productID":"com.vip.sub.yearly","price":"39.99"},
+      {"name":"yearly trial","productID":"com.vip.sub.yearly.trial","price":"39.99"},
+      {"name":"monthly","productID":"com.vip.sub.monthly","price":"12.99"},
+      {"name":"monthly trial","productID":"com.vip.sub.monthly.trial","price":"12.99"},
+      {"name":"weekly","productID":"com.vip.sub.weekly","price":"6.99"},
+      {"name":"weekly trial","productID":"com.vip.sub.weekly.trial","price":"6.99"}
+    ]
+  }</script>
+
+  <!-- JS: safe year setter + sanity tests + pricing checks -->
+  <script>
+    (function () {
+      function setYear(){var y=document.getElementById('y');if(y)y.textContent=new Date().getFullYear();}
+      if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setYear);} else {setYear();}
+
+      // Sanity checks
+      (function (){
+        console.assert(!!document.getElementById('features'), '#features missing');
+        console.assert(!!document.getElementById('devices'),  '#devices missing');
+        console.assert(!!document.getElementById('privacy'),  '#privacy missing');
+        console.assert(!!document.getElementById('faq'),      '#faq missing');
+        console.assert(!!document.getElementById('contact'),  '#contact missing');
+        console.assert(!!document.getElementById('y'),        '#y missing');
+      })();
+
+      // Pricing tests
+      (function(){
+        try{
+          var data = JSON.parse(document.getElementById('pricing-json').textContent);
+          var map = {}; data.plans.forEach(p=>map[p.productID]=p.price);
+          function money(el){return (el.querySelector('.big')?.textContent||'').replace(/[^\\d.]/g,'');}
+          [['com.vip.sub.monthly','[data-sku=\"com.vip.sub.monthly\"]'],
+           ['com.vip.sub.yearly', '[data-sku=\"com.vip.sub.yearly\"]' ],
+           ['com.vip.sub.weekly', '[data-sku=\"com.vip.sub.weekly\"]' ]].forEach(([sku,sel])=>{
+             var card=document.querySelector(sel); console.assert(!!card, 'Missing card: '+sku);
+             if(card) console.assert(money(card)===map[sku], 'Price mismatch: '+sku);
+           });
+        }catch(e){ console.warn('Pricing test skipped:', e); }
+      })();
+    })();
+  </script>
+
+<script>
+(function(){
+  function setMode(mode){
+    var imgs = document.querySelectorAll('.grid.shots .shot img');
+    // Only operate on the first 4 images: map to 1..4 strictly
+    for(var i=0;i<4 && i<imgs.length;i++){
+      var n = i + 1; // 1..4 (never 0)
+      var next = (mode==='ipad' ? './ipad_image' : './image') + n + '.png';
+      imgs[i].setAttribute('src', next);
+    }
+    // update selected state
+    var btns = document.querySelectorAll('#deviceSeg .seg-btn');
+    for(var j=0;j<btns.length;j++){
+      var sel = (btns[j].getAttribute('data-mode')===mode);
+      btns[j].setAttribute('aria-selected', sel ? 'true' : 'false');
+    }
+    try{ localStorage.setItem('ui_preview_mode', mode); }catch(e){}
+  }
+  function init(){
+    // default to iPhone (image1..4)
+    try{
+      var saved = localStorage.getItem('ui_preview_mode');
+      setMode(saved || 'iphone');
+    }catch(e){
+      setMode('iphone');
+    }
+    var seg = document.getElementById('deviceSeg');
+    if(seg){
+      seg.addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('button[data-mode]');
+        if(!b) return;
+        setMode(b.getAttribute('data-mode'));
+      });
+    }
+    // Also support direct clicks on the two buttons in case event delegation fails
+    var btnI = document.querySelector('#deviceSeg .seg-btn[data-mode="iphone"]');
+    var btnP = document.querySelector('#deviceSeg .seg-btn[data-mode="ipad"]');
+    if(btnI){ btnI.onclick = function(){ setMode('iphone'); }; }
+    if(btnP){ btnP.onclick = function(){ setMode('ipad'); }; }
+    // Expose globally if needed
+    window.__setUIPreviewMode = setMode;
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+</script>
+
+
+<script>
+(function(){
+  function safeSwap(mode){
+    var imgs = document.querySelectorAll('.grid.shots .shot img');
+    for(var i=0;i<4 && i<imgs.length;i++){
+      (function(img, n){
+        // Neutralize any destructive inline onerror that might replace the node
+        try{ img.onerror = null; img.removeAttribute && img.removeAttribute('onerror'); }catch(e){}
+        var target = (mode==='ipad' ? './ipad_image' : './image') + n + '.png';
+        var current = img.getAttribute('src');
+        // Preload: only commit if the target can load, otherwise keep current src
+        var loader = new Image();
+        loader.onload = function(){ img.setAttribute('src', target); };
+        loader.onerror = function(){ /* keep current */ };
+        loader.src = target;
+      })(imgs[i], i+1);
+    }
+    // update selected state
+    var btns = document.querySelectorAll('#deviceSeg .seg-btn');
+    for(var j=0;j<btns.length;j++){
+      var sel = (btns[j].getAttribute('data-mode')===mode);
+      btns[j].setAttribute('aria-selected', sel ? 'true' : 'false');
+    }
+    try{ localStorage.setItem('ui_preview_mode', mode); }catch(e){}
+  }
+  function init(){
+    safeSwap('iphone');
+    var seg = document.getElementById('deviceSeg');
+    if(seg){
+      seg.addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('button[data-mode]');
+        if(!b) return;
+        safeSwap(b.getAttribute('data-mode'));
+      });
+      var btnI = seg.querySelector('.seg-btn[data-mode="iphone"]');
+      var btnP = seg.querySelector('.seg-btn[data-mode="ipad"]');
+      if(btnI) btnI.onclick = function(){ safeSwap('iphone'); };
+      if(btnP) btnP.onclick = function(){ safeSwap('ipad'); };
+    }
+    window.__setUIPreviewMode = safeSwap;
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+</script>
+
+</body>
+</html>
